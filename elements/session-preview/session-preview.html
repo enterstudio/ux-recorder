@@ -1,0 +1,202 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+<dom-module id="session-preview">
+  <template>
+    <style>
+     :host {
+      display: block;
+    }
+
+    h3 {
+      @apply(--paper-font-title);
+      margin: 12px 16px;
+    }
+
+    canvas {
+      width: 100%;
+    }
+
+    #videoContent {
+      margin: 8px 16px;
+      /*@apply(--layout-horizontal);*/
+    }
+
+    #controls {
+      margin: 8px 16px;
+    }
+
+    paper-slider {
+      width: 100%;
+    }
+
+    #buttons {
+      margin: 12px 16px;
+    }
+    </style>
+    <h3>Preview</h3>
+    <div id="videoContent">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div id="controls" hidden$="[[hideUserControls]]">
+      <label>User image opacity</label>
+      <paper-slider max="1" min="0" step="0.01" value="{{userAlpha}}" immediate-value="{{userAlpha}}"></paper-slider>
+      <label>User image size</label>
+      <paper-slider max="2" min="0.2" step="0.01" value="{{userScale}}" immediate-value="{{userScale}}"></paper-slider>
+    </div>
+    <div id="buttons">
+      <paper-button raised on-tap="begin">Begin recording</paper-button>
+      <paper-button on-tap="cancel">Cancel</paper-button>
+    </div>
+    <video hidden id="user" src="[[userSrc]]" on-loadedmetadata="_metaLoaded" muted></video>
+    <video hidden id="screen" src="[[screenSrc]]" on-loadedmetadata="_metaLoaded" muted></video>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'session-preview',
+
+  properties: {
+    userSrc: String,
+    screenSrc: String,
+    userPlaying: {
+      type: Boolean,
+      value: false
+    },
+    screenPlaying: {
+      type: Boolean,
+      value: false
+    },
+    context: {
+      type: Object,
+      readOnly: true
+    },
+    drawing: {
+      type: Boolean,
+      value: false
+    },
+    _draw: {
+      type: Function,
+      value: function() {
+        return this.draw.bind(this);
+      }
+    },
+    // Canvas height
+    ch: Number,
+    // Canvas width
+    cw: Number,
+    // User video height
+    uh: Number,
+    // User video width
+    uw: Number,
+    // Screen video height
+    sh: Number,
+    // Screen video width
+    sw: Number,
+    // Alpha channel of the user image
+    userAlpha: {
+      type: Number,
+      value: 0.54,
+      notify: true
+    },
+    // Scale of the user image
+    userScale: {
+      type: Number,
+      value: 0.7,
+      notify: true
+    },
+    // If set, removed user controls to control the user image.
+    hideUserControls: {
+      type: Boolean,
+      value: false
+    },
+    canvas: {
+      type: HTMLElement,
+      value: function() {
+        return this.$.canvas;
+      }
+    }
+  },
+
+  ready: function() {
+    this._setContext(this.$.canvas.getContext('2d'));
+    this.listen(window, 'resize', '_resize');
+  },
+
+  detached: function() {
+    this.listen(window, 'resize', '_resize');
+  },
+
+  _metaLoaded: function(e) {
+    var t = e.target;
+    t.play();
+    if (t === this.$.user) {
+      this.userPlaying = true;
+      this.uw = this.$.user.videoWidth;
+      this.uh = this.$.user.videoHeight;
+    } else {
+      this.screenPlaying = true;
+      this.sw = this.$.screen.videoWidth;
+      this.sh = this.$.screen.videoHeight;
+    }
+    if (!this.drawing) {
+      this.drawing = true;
+      this._resize();
+      window.requestAnimationFrame(this._draw);
+    }
+  },
+
+  _resize() {
+    this.cw = this.$.canvas.clientWidth;
+    this.ch = this.$.canvas.clientHeight;
+    if (this.cw) {
+      this.$.canvas.width = this.cw;
+    }
+    if (this.ch) {
+      this.$.canvas.height = this.ch;
+    }
+  },
+
+  begin: function() {
+    this.fire('begin')
+  },
+
+  cancel: function() {
+    this.fire('cancel')
+  },
+
+  draw() {
+    var c = this.context;
+    c.globalAlpha = 1;
+    if (this.screenPlaying) {
+      c.drawImage(this.$.screen, 0, 0, this.cw, this.ch);
+    } else {
+      c.fillStyle = 'black';
+      c.fillRect(0, 0, this.cw, this.ch);
+    }
+
+    var ar = this.uw / this.uh;
+    var uw = 0.3 * this.cw;
+    var uh = uw / ar;
+    var a = this.userAlpha;
+    var us = this.userScale;
+    c.globalAlpha = a;
+    uw = uw * us;
+    uh = uh * us;
+    var x = this.cw - uw - 8;
+    var y = this.ch - uh - 8;
+    if (this.userPlaying) {
+      c.drawImage(this.$.user, x, y, uw, uh);
+    } else {
+      c.fillStyle = 'green';
+      c.fillRect(x, y, uw, uh);
+    }
+    window.requestAnimationFrame(this._draw);
+  },
+
+  captureStream: function() {
+    return this.$.canvas.captureStream();
+  }
+});
+</script>

@@ -1,0 +1,32 @@
+{
+  "name": "ux-recorder",
+  "version": "0.0.1",
+  "description": "Records a remote user testing sessions both the screencast and camera feed.",
+  "authors": [
+    "Pawel Psztyc <jarrodek@gmail.com>"
+  ],
+  "dependencies": {
+    "gulp": "^3.8.5",
+    "conventional-github-releaser": "^1.1.1",
+    "gulp-conventional-changelog": "^1.1.0",
+    "gulp": "^3.8.5",
+    "gulp-bump": "^2.1.0",
+    "gulp-git": "^1.7.1",
+    "gulp-html-extract": "^0.0.3",
+    "gulp-if": "^2.0.0",
+    "gulp-jshint": "^1.6.3",
+    "gulp-jscs": "^3.0.0",
+    "gulp-jscs-stylish": "^1.1.2",
+    "gulp-load-plugins": "^1.1.0",
+    "gulp-util": "^3.0.7",
+    "jshint-stylish": "^2.0.0",
+    "run-sequence": "^1.1.5",
+    "polymer": "^0.5.0"
+  },
+  "scripts": {
+    "poly": "vulcanize -o extension/polybuild.html elements/elements.html",
+    "crisp": "crisper --source extension/polybuild.html --html extension/polybuild.html --js extension/polybuild.js",
+    "copy": "mkdir -p extension/bower_components/webcomponentsjs/ && cp bower_components/webcomponentsjs/webcomponents.js extension/bower_components/webcomponentsjs/webcomponents.js",
+    "pbuild": "npm run poly && npm run crisp && npm run copy"
+  }
+}

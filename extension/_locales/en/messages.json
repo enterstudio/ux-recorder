@@ -1,0 +1,18 @@
+{
+    "extensionName": {
+        "message": "UX recorder",
+        "description": "A full extension name."
+    },
+    "extensionShortName": {
+        "message": "UX rec",
+        "description": "Short name used in apps listing."
+    },
+    "extensionDescription": {
+        "message": "Records a remote user testing sessions both the screencast and camera feed.",
+        "description": "Description visible to the user in apps listing"
+    },
+    "recordSession": {
+      "message": "Record session",
+      "description": "Browser action tooltip"
+    }
+}
