@@ -6,14 +6,12 @@
   "manifest_version": 2,
   "version": "1.0.0",
   "background": {
-    "persistent": false,
-    "scripts": [
-      "js/background.js"
-    ]
+    "page": "js/background.html"
   },
   "permissions": [
     "desktopCapture",
-    "activeTab"
+    "activeTab",
+    "identity"
   ],
   "icons": {
     "16": "assets/icon_16.png",
@@ -30,5 +28,14 @@
     "bower_components/webcomponentsjs/webcomponents.js",
     "polybuild.html",
     "polybuild.js"
-  ]
+  ],
+  "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+  "oauth2": {
+    "client_id": "157648171970-1re8peb5k6b53kdvfbmh2jadcfk9n9v4.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiPAlICLeQbOqCn2/q4a4uVoACPLXb9yfiVnoQKJvzu4LwzoPuryY3MwQTC5i/w14Oh6t1x5gse4WXNRUZmgtDPJZx4pVXV/uMrWIuLZUvCgKcaz3YqKKI9c4lLvLeptw1vAVLDuoZpx1sqwHsSLYWUOG/0nTm/lirXDaPGaG2IuYmHmXf6PqkXvnyrTHws+NQ/pSbkEp+vev9wZg9owB5779EC1H/oTCvUHWjYfuCi/dGTHyUxZi+Vw+TfrwXYePWIIWaXx1vbeKz5SSIaC0fSYGqom2W8cfPvz8ZoDm/BG6Im77cJxtix9HuDX1poYiBwUAt+Ni/9MhU3dCb3VpzwIDAQAB"
 }

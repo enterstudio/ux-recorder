@@ -1,8 +1,34 @@
 'use strict';
 
-/* global chrome */
+/* global chrome, firebase */
+
+var config = {
+  apiKey: 'AIzaSyA7fHJS8ZDSwwOQjm_istdWPW2iN-X39UQ',
+  // authDomain: "ux-recordings.firebaseapp.com",
+  databaseURL: 'https://ux-recordings.firebaseio.com',
+  storageBucket: 'ux-recordings.appspot.com'
+  // messagingSenderId: '157648171970'
+};
+firebase.initializeApp(config);
 
 class UxBackground {
+
+  constructor() {
+    this.authUser = null;
+    this.initFirebase();
+  }
+
+  initFirebase() {
+    var auth = firebase.auth();
+    auth.onAuthStateChanged(this._authChanged.bind(this));
+    this.authUser = auth.currentUser;
+  }
+
+  _authChanged(user) {
+    console.log('User state change detected from the Background script of the Chrome Extension:',
+      user);
+  }
+
   execute(tab) {
     if (!tab) {
       throw new Error('The tab is not defined.');
@@ -39,7 +65,7 @@ class UxBackground {
   }
 
   _onPortMessage(message) {
-    if(!message || !message.payload) {
+    if (!message || !message.payload) {
       return;
     }
     switch (message.payload) {
@@ -62,7 +88,7 @@ class UxBackground {
         }
         opt.streamId = streamId;
         this.port.postMessage(opt);
-    });
+      });
   }
 
   stopRecording() {
@@ -84,6 +110,12 @@ chrome.browserAction.onClicked.addListener((tab) => {
     return;
   }
   script = new UxBackground();
+  if (!script.authUser) {
+    chrome.tabs.create({'url': chrome.extension.getURL('pages/credentials.html')}, () => {
+      console.log('Opened auth tab');
+    });
+    return;
+  }
   script.execute(tab);
   chrome.runtime.onConnect.addListener((port) => {
     script._onConnected(port);

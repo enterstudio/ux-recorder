@@ -10978,7 +10978,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
       /**
        * The maximum (numeric or date-time) input value.
-       * Can be a String (e.g. `"2000-1-1"`) or a Number (e.g. `2`).
+       * Can be a String (e.g. `"2000-01-01"`) or a Number (e.g. `2`).
        * If you're using PaperInputBehavior to implement your own paper-input-like
        * element, bind this to the `<input is="iron-input">`'s `max` property.
        */
@@ -12235,15 +12235,8 @@ Polymer({
       value: function() {
         return this.$.canvas;
       }
-    },
-    requestCaptureStream: {
-      type: Boolean
     }
   },
-
-  observers: [
-    '_requestCaptureStream(requestCaptureStream)'
-  ],
 
   ready: function() {
     this._setContext(this.$.canvas.getContext('2d'));
@@ -12323,13 +12316,5 @@ Polymer({
 
   captureStream: function() {
     return this.$.canvas.captureStream();
-  },
-
-  _requestCaptureStream: function(requestCaptureStream) {
-    if (requestCaptureStream) {
-      this.fire('capture-stream', {
-        stream: this.captureStream()
-      });
-    }
   }
 });
